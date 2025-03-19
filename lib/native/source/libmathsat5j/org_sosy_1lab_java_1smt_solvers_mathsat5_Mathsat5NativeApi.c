@@ -1227,7 +1227,7 @@ RETURN_TERM_ARRAY(2)
 DEFINE_FUNC(jproofManager, 1get_1proof_1manager) WITH_ONE_ARG(jenv)
 ENV_ARG(1)
 CALL1(msat_proof_manager, get_proof_manager)
-STRUCT_RETURN_WITH_ENV
+STRUCT_RETURN
 
 /*
  * void msat_destroy_proof_manager(msat_proof_manager m)

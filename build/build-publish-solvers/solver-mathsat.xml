@@ -61,7 +61,8 @@ SPDX-License-Identifier: Apache-2.0
         </exec>
     </target>
 
-    <target name="publish-mathsat" depends="compile-mathsat-bindings-linux-x64, compile-mathsat-bindings-linux-arm64, compile-mathsat-bindings-windows-x64, load-ivy"
+    <target name="publish-mathsat"
+            depends="compile-mathsat-bindings-linux-x64, compile-mathsat-bindings-linux-arm64, compile-mathsat-bindings-windows-x64, load-ivy"
         description="Publish MathSAT binaries to Ivy repo.">
         <fail unless="mathsat.version">
             Please specify the MathSAT5 version with the flag -Dmathsat.version=... .
