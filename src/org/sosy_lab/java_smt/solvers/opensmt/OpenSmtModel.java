@@ -8,14 +8,12 @@
 
 package org.sosy_lab.java_smt.solvers.opensmt;
 
-import static org.sosy_lab.common.collect.Collections3.elementAndList;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.sosy_lab.java_smt.basicimpl.AbstractModel;
@@ -44,15 +42,7 @@ public class OpenSmtModel extends AbstractModel<PTRef, SRef, Logic> {
     osmtLogic = pCreator.getEnv();
     osmtModel = pProver.getOsmtSolver().getModel();
 
-    // We need to generate and save this at construction time as OpenSMT has no functionality to
-    // give a persistent reference to the model. If the SMT engine is used somewhere else, the
-    // values we get out of it might change!
-    model = generateModel(pCreator, pAssertedTerms);
-  }
-
-  private ImmutableList<ValueAssignment> generateModel(
-      OpenSmtFormulaCreator pCreator, Collection<PTRef> pAssertedTerms) {
-    Map<String, PTRef> userDeclarations = new LinkedHashMap<>();
+    Map<String, PTRef> userDeclarations = new HashMap<>();
     for (PTRef asserted : pAssertedTerms) {
       userDeclarations.putAll(creator.extractVariablesAndUFs(asserted, true));
     }
@@ -76,30 +66,36 @@ public class OpenSmtModel extends AbstractModel<PTRef, SRef, Logic> {
       if (numArgs == 0) {
         PTRef key = osmtLogic.mkVar(sort, osmtLogic.getSymName(ref));
         PTRef value = osmtModel.evaluate(key);
-        builder.add(getValueAssignment(pCreator, key, value, ref, ImmutableList.of()));
+
+        builder.add(
+            new ValueAssignment(
+                pCreator.encapsulate(key),
+                pCreator.encapsulate(value),
+                pCreator.encapsulateBoolean(osmtLogic.mkEq(key, value)),
+                osmtLogic.getSymName(ref),
+                pCreator.convertValue(value),
+                new ArrayList<>()));
       } else {
         TemplateFunction tf = osmtModel.getDefinition(ref);
 
         for (List<PTRef> path : unfold(numArgs, tf.getBody())) {
           List<PTRef> args = path.subList(0, numArgs);
+
           PTRef key = osmtLogic.insertTerm(ref, new VectorPTRef(args));
           PTRef value = path.get(numArgs);
-          builder.add(getValueAssignment(pCreator, key, value, ref, args));
+
+          builder.add(
+              new ValueAssignment(
+                  pCreator.encapsulate(key),
+                  pCreator.encapsulate(value),
+                  pCreator.encapsulateBoolean(osmtLogic.mkEq(key, value)),
+                  osmtLogic.getSymName(ref),
+                  pCreator.convertValue(value),
+                  Lists.transform(args, pCreator::convertValue)));
         }
       }
     }
-    return builder.build();
-  }
-
-  private ValueAssignment getValueAssignment(
-      OpenSmtFormulaCreator pCreator, PTRef key, PTRef value, SymRef ref, List<PTRef> args) {
-    return new ValueAssignment(
-        pCreator.encapsulate(key),
-        pCreator.encapsulate(value),
-        pCreator.encapsulateBoolean(osmtLogic.mkEq(key, value)),
-        osmtLogic.getSymName(ref),
-        pCreator.convertValue(value),
-        Lists.transform(args, pCreator::convertValue));
+    model = builder.build();
   }
 
   @Override
@@ -107,7 +103,7 @@ public class OpenSmtModel extends AbstractModel<PTRef, SRef, Logic> {
     Preconditions.checkState(!isClosed());
     Map<String, PTRef> userDeclarations = creator.extractVariablesAndUFs(f, true);
 
-    // FIXME: rewrite to use checkCompatibility from AbstractProver
+    // FIXME: rewrite to use checkCompatability from AbstractProver
 
     for (PTRef term : userDeclarations.values()) {
       SRef sort = osmtLogic.getSortRef(term);
@@ -147,14 +143,20 @@ public class OpenSmtModel extends AbstractModel<PTRef, SRef, Logic> {
       PTRef value = osmtLogic.isVar(sub00) ? sub01 : sub00;
 
       for (List<PTRef> nested : unfold(numArgs - 1, sub1)) {
-        List<PTRef> prefixed = elementAndList(value, nested);
+        List<PTRef> prefixed = new ArrayList<>();
+        prefixed.add(value);
+        prefixed.addAll(nested);
+
         unwrapped.add(prefixed);
       }
       unwrapped.addAll(unfold(numArgs, sub2));
     }
 
     if (numArgs == 0) {
-      unwrapped.add(ImmutableList.of(body));
+      List<PTRef> value = new ArrayList<>();
+      value.add(body);
+
+      unwrapped.add(value);
     }
     return unwrapped;
   }
