@@ -78,12 +78,7 @@ public class OpenSmtBooleanFormulaManager
 
   @Override
   protected PTRef makeVariableImpl(String pVar) {
-    try {
-      return logic.mkBoolVar(pVar);
-    } catch (UnsupportedOperationException e) {
-      // can fail, if function is already declared with a different sort
-      throw new IllegalArgumentException("Cannot declare boolean variable '" + pVar + "'", e);
-    }
+    return logic.mkBoolVar(pVar);
   }
 
   @Override

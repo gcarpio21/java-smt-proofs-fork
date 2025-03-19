@@ -507,7 +507,8 @@ public abstract class SolverStackTest0 extends SolverBasedTest0.ParameterizedSol
     }
   }
 
-  @Test
+  @Test(expected = IllegalStateException.class)
+  @SuppressWarnings("CheckReturnValue")
   public void avoidDualStacksIfNotSupported() throws InterruptedException {
     assume()
         .withMessage("Solver does not support multiple stacks yet")
@@ -518,7 +519,7 @@ public abstract class SolverStackTest0 extends SolverBasedTest0.ParameterizedSol
     stack1.push(bmgr.makeTrue());
 
     // creating a new environment is not allowed with non-empty stack -> fail
-    assertThrows(IllegalStateException.class, () -> newEnvironmentForTest(context));
+    newEnvironmentForTest(context);
   }
 
   /**

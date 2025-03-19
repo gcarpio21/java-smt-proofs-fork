@@ -108,12 +108,7 @@ public final class OpenSmtFormulaCreator extends FormulaCreator<PTRef, SRef, Log
 
   @Override
   public SymRef declareUFImpl(String pName, SRef pReturnType, List<SRef> pArgTypes) {
-    try {
-      return getEnv().declareFun(pName, pReturnType, new VectorSRef(pArgTypes));
-    } catch (UnsupportedOperationException e) {
-      // can fail, if function is already declared with a different sort
-      throw new IllegalArgumentException("Cannot declare function '" + pName + "'", e);
-    }
+    return getEnv().declareFun(pName, pReturnType, new VectorSRef(pArgTypes));
   }
 
   @Override

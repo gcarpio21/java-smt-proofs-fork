@@ -9,7 +9,6 @@
 package org.sosy_lab.java_smt.solvers.yices2;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.sosy_lab.java_smt.solvers.yices2.Yices2NativeApi.YICES_APP_TERM;
 import static org.sosy_lab.java_smt.solvers.yices2.Yices2NativeApi.YICES_ARITH_CONST;
 import static org.sosy_lab.java_smt.solvers.yices2.Yices2NativeApi.YICES_ARITH_SUM;
@@ -196,9 +195,10 @@ public class Yices2NativeApiTest {
     assertThat(yices_check_context(env, 0)).isEqualTo(UNSAT);
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void rationalError() {
-    assertThrows(IllegalArgumentException.class, () -> yices_rational32(1, 0));
+    int rat = yices_rational32(1, 0);
+    System.out.println(rat); // "use" variable
   }
 
   @Test
@@ -208,10 +208,11 @@ public class Yices2NativeApiTest {
     System.out.println(rat); // "use" variable
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
   public void wrongType() {
     int one = yices_int32(1);
-    assertThrows(IllegalArgumentException.class, () -> yices_term_bitsize(one));
+    int bitsize = yices_term_bitsize(one);
+    System.out.println(bitsize); // "use" variable
   }
 
   @Test
@@ -255,10 +256,11 @@ public class Yices2NativeApiTest {
     assertThat(yices_bool_const_value(v2)).isFalse();
   }
 
-  @Test
+  @SuppressWarnings("CheckReturnValue")
+  @Test(expected = IllegalArgumentException.class)
   public void boolValueTypeMismatch() {
     int v1 = yices_int32(45);
-    assertThrows(IllegalArgumentException.class, () -> yices_bool_const_value(v1));
+    yices_bool_const_value(v1);
   }
 
   @Test

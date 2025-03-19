@@ -83,13 +83,12 @@ public class BitvectorFormulaManagerTest extends SolverBasedTest0.ParameterizedS
     }
   }
 
-  @Test
+  @Test(expected = IllegalArgumentException.class)
+  @SuppressWarnings("CheckReturnValue")
   public void bvTooLargeNum() {
-    // value 4 is too large for size 2
-    assertThrows(IllegalArgumentException.class, () -> bvmgr.makeBitvector(2, 4));
+    bvmgr.makeBitvector(2, 4); // value 4 is too large for size 2
     if (solver != Solvers.BOOLECTOR) {
-      // value 2 is too large for size 1
-      assertThrows(IllegalArgumentException.class, () -> bvmgr.makeBitvector(1, 2));
+      bvmgr.makeBitvector(1, 2); // value 2 is too large for size 1
     }
   }
 

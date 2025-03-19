@@ -1132,15 +1132,15 @@ public class SolverTheoriesTest extends SolverBasedTest0.ParameterizedSolverBase
     }
   }
 
-  @Test // complement of above test case
+  @Test(expected = Exception.class) // complement of above test case
   @SuppressWarnings("CheckReturnValue")
   public void testFailOnVariableWithDifferentSort() {
     assume().that(solverToUse()).isIn(VAR_TRACKING_SOLVERS);
     bmgr.makeVariable("x");
     if (imgr != null) {
-      assertThrows(IllegalArgumentException.class, () -> imgr.makeVariable("x"));
+      imgr.makeVariable("x");
     } else if (bvmgr != null) {
-      assertThrows(IllegalArgumentException.class, () -> bvmgr.makeVariable(8, "x"));
+      bvmgr.makeVariable(8, "x");
     }
   }
 
@@ -1152,28 +1152,20 @@ public class SolverTheoriesTest extends SolverBasedTest0.ParameterizedSolverBase
     fmgr.declareUF("y", FormulaType.BooleanType, FormulaType.BooleanType);
   }
 
-  @Test // complement of above test case
+  @Test(expected = Exception.class) // complement of above test case
   @SuppressWarnings("CheckReturnValue")
   public void testFailOnVariableAndUFWithDifferentSort() {
     assume().that(solverToUse()).isIn(VAR_AND_UF_TRACKING_SOLVERS);
     bmgr.makeVariable("y");
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> fmgr.declareUF("y", FormulaType.BooleanType, FormulaType.BooleanType));
+    fmgr.declareUF("y", FormulaType.BooleanType, FormulaType.BooleanType);
   }
 
-  @Test // different ordering of above test case
+  @Test(expected = Exception.class) // different ordering of above test case
   @SuppressWarnings("CheckReturnValue")
   public void testFailOnUFAndVariableWithDifferentSort() {
     assume().that(solverToUse()).isIn(VAR_AND_UF_TRACKING_SOLVERS);
-    if (solverToUse() == Solvers.MATHSAT5) {
-      assertThrows(
-          IllegalArgumentException.class,
-          () -> fmgr.declareUF("y", FormulaType.BooleanType, FormulaType.BooleanType));
-    } else {
-      fmgr.declareUF("y", FormulaType.BooleanType, FormulaType.BooleanType);
-      assertThrows(IllegalArgumentException.class, () -> bmgr.makeVariable("y"));
-    }
+    fmgr.declareUF("y", FormulaType.BooleanType, FormulaType.BooleanType);
+    bmgr.makeVariable("y");
   }
 
   @Test

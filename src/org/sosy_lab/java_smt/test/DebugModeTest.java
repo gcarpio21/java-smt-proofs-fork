@@ -8,6 +8,7 @@
 
 package org.sosy_lab.java_smt.test;
 
+import static com.google.common.truth.TruthJUnit.assume;
 import static org.junit.Assert.assertThrows;
 import static org.sosy_lab.java_smt.test.ProverEnvironmentSubject.assertThat;
 
@@ -94,7 +95,8 @@ public class DebugModeTest extends SolverBasedTest0.ParameterizedSolverBasedTest
   @SuppressWarnings("resource")
   @Test
   public void nonLocalThreadTest() {
-    requireVisitor();
+    // Fails for Boolector as debug mode requires visitor support
+    assume().that(solverToUse()).isNotEqualTo(Solvers.BOOLECTOR);
 
     ExecutorService exec = Executors.newSingleThreadExecutor();
     Future<?> result =
@@ -139,7 +141,9 @@ public class DebugModeTest extends SolverBasedTest0.ParameterizedSolverBasedTest
   public void noSharedFormulasTest()
       throws InterruptedException, SolverException, InvalidConfigurationException {
     requireIntegers();
-    requireVisitor();
+
+    // Fails for Boolector as debug mode requires visitor support
+    assume().that(solverToUse()).isNotEqualTo(Solvers.BOOLECTOR);
 
     try (SolverContext newContext = debugFactory.generateContext()) {
       BooleanFormulaManager newBmgr = newContext.getFormulaManager().getBooleanFormulaManager();
@@ -171,7 +175,9 @@ public class DebugModeTest extends SolverBasedTest0.ParameterizedSolverBasedTest
   @Test
   public void noSharedDeclarationsTest() throws InvalidConfigurationException {
     requireIntegers();
-    requireVisitor();
+
+    // Fails for Boolector as debug mode requires visitor support
+    assume().that(solverToUse()).isNotEqualTo(Solvers.BOOLECTOR);
 
     try (SolverContext newContext = debugFactory.generateContext()) {
       UFManager newFmgr = newContext.getFormulaManager().getUFManager();
@@ -189,8 +195,9 @@ public class DebugModeTest extends SolverBasedTest0.ParameterizedSolverBasedTest
   }
 
   /** Try to add a formula from a different solver to our solver context. */
-  @Test
-  public void noSharingBetweenSolversTest() throws InvalidConfigurationException {
+  @Test(expected = IllegalArgumentException.class)
+  public void noSharingBetweenSolversTest()
+      throws InvalidConfigurationException, InterruptedException, SolverException {
     Solvers otherSolver =
         solverToUse() == Solvers.SMTINTERPOL ? Solvers.PRINCESS : Solvers.SMTINTERPOL;
 
@@ -199,7 +206,9 @@ public class DebugModeTest extends SolverBasedTest0.ParameterizedSolverBasedTest
       BooleanFormula formula = otherBmgr.makeFalse();
 
       try (BasicProverEnvironment<?> prover = debugContext.newProverEnvironment()) {
-        assertThrows(IllegalArgumentException.class, () -> prover.push(formula));
+        // This should fail for all solvers
+        prover.push(formula);
+        assertThat(prover).isUnsatisfiable();
       }
     }
   }

@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <jni.h>
 #include "mathsat.h"
-#ifdef BUILD_FOR_OPTIMATHSAT5
+#ifdef INCLUDE_OPTIMATHSAT5_HEADER
     #include "optimathsat.h"
 #endif
 #include <gmp.h>
