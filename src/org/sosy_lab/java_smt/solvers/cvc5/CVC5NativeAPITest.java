@@ -15,6 +15,7 @@ import com.google.common.base.Preconditions;
 import io.github.cvc5.CVC5ApiException;
 import io.github.cvc5.Kind;
 import io.github.cvc5.Op;
+import io.github.cvc5.Proof;
 import io.github.cvc5.Result;
 import io.github.cvc5.RoundingMode;
 import io.github.cvc5.Solver;
@@ -82,7 +83,7 @@ public class CVC5NativeAPITest {
     newSolver.setOption("incremental", "true");
     newSolver.setOption("produce-models", "true");
     newSolver.setOption("finite-model-find", "true");
-    newSolver.setOption("sets-ext", "true");
+    //newSolver.setOption("sets-ext", "true");
     newSolver.setOption("output-language", "smtlib2");
     newSolver.setOption("strings-exp", "true");
     newSolver.setOption("produce-proofs", "true");
@@ -1386,7 +1387,7 @@ public class CVC5NativeAPITest {
     Result satCheck = solver.checkSat();
     assertThat(satCheck.isUnsat()).isTrue();
 
-    String proof = solver.getProof();
+    Proof[] proof = solver.getProof();
 
     System.out.println(proof);
   }
