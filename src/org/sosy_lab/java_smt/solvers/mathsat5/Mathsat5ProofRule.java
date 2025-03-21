@@ -8,16 +8,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-package org.sosy_lab.java_smt.solvers.cvc5;
+package org.sosy_lab.java_smt.solvers.mathsat5;
 
-import org.sosy_lab.java_smt.api.Formula;
 import org.sosy_lab.java_smt.api.proofs.ProofRule;
-import org.sosy_lab.java_smt.basicimpl.AbstractProofNode;
 
-public class CVC5ProofNode extends AbstractProofNode {
+public class Mathsat5ProofRule implements ProofRule {
 
-  public CVC5ProofNode(ProofRule pProofRule, Formula formula) {
+  private String name;
 
-    super(pProofRule, formula);
+  Mathsat5ProofRule(String pName) {
+    name = pName;
+  }
+
+  @Override
+  public String getName() {
+    return name;
   }
 }
