@@ -48,7 +48,7 @@ public class CVC5ProofProcessor {
         frame.numChildren = rootProof.getChildren().length;
         frame.visited = true;
 
-        for (int i = frame.numChildren; i >= 0; i--) {
+        for (int i = frame.numChildren-1; i >= 0; i--) {
           Proof child = rootProof.getChildren()[i];
           if (!computed.containsKey(child)) {
             stack.push(new Frame(child));
