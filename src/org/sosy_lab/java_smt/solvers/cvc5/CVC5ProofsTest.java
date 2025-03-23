@@ -60,11 +60,26 @@ public class CVC5ProofsTest {
   private CVC5FormulaManager mgr;
   private CVC5BooleanFormulaManager bmgr;
 
+
   @Before
   public void init() throws CVC5ApiException {
     tm = new TermManager();
-    booleanSort = tm.getBooleanSort();
     solver = createEnvironment();
+  }
+
+  private Solver createEnvironment() throws CVC5ApiException {
+    Solver newSolver = new Solver(tm);
+    newSolver.setLogic("ALL");
+
+    // options
+    newSolver.setOption("incremental", "true");
+    newSolver.setOption("produce-models", "true");
+    newSolver.setOption("finite-model-find", "true");
+    newSolver.setOption("output-language", "smtlib2");
+    newSolver.setOption("strings-exp", "true");
+    newSolver.setOption("produce-proofs", "true");
+
+    return newSolver;
   }
 
   @Before
@@ -92,23 +107,6 @@ public class CVC5ProofsTest {
     tm.deletePointer();
   }
 
-  private static Solver createEnvironment() throws CVC5ApiException {
-
-    Solver newSolver = new Solver(tm);
-    newSolver.setLogic("ALL");
-
-    // options
-    newSolver.setOption("incremental", "true");
-    newSolver.setOption("produce-models", "true");
-    newSolver.setOption("finite-model-find", "true");
-    // newSolver.setOption("sets-ext", "true");
-    newSolver.setOption("output-language", "smtlib2");
-    newSolver.setOption("strings-exp", "true");
-    newSolver.setOption("produce-proofs", "true");
-
-    return newSolver;
-  }
-
   @Test
   public void getProofTest() {
     // example from the 2022 RESOLUTE paper
@@ -120,9 +118,10 @@ public class CVC5ProofsTest {
       prover.addConstraint(bmgr.or(bmgr.not(q1), q2));
       prover.addConstraint(q1);
       prover.addConstraint(bmgr.not(q2));
-      assertTrue(prover.isUnsat());
+      ProofNode proof = null;
+      if (prover.isUnsat()) {proof = prover.getProof();}
 
-      ProofNode proof = prover.getProof();
+
       assertThat(proof).isNotNull();
     } catch (SolverException | InterruptedException pE) {
       throw new RuntimeException(pE);
