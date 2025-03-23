@@ -129,6 +129,8 @@ public class CVC5ProofsTest {
 
   }
 
+
+
   private void processProof(Proof proof, int depth, int childNumber) throws CVC5ApiException {
     String indent = "  ".repeat(depth); // Indentation for readability
 
@@ -149,6 +151,34 @@ public class CVC5ProofsTest {
       System.out.println(indent + "  Child " + (i + 1) + " of Proof " + childNumber + ":");
       processProof(proofChildren[i], depth + 1, i + 1);
     }
+  }
+
+  @Test
+  public void printFormattedProofTest() throws CVC5ApiException {
+    // (declare-fun q1 () Bool)
+    // (declare-fun q2 () Bool)
+    // (assert (or (not q1) q2))
+    // (assert q1)
+    // (assert (not q2))
+    Sort booleanSort = tm.getBooleanSort();
+    Term q1 = solver.declareFun("q1", new Sort[]{}, booleanSort);
+    Term q2 = solver.declareFun("q2", new Sort[]{}, booleanSort);
+
+    solver.assertFormula(tm.mkTerm(Kind.OR, (tm.mkTerm(Kind.NOT, q1)), q2));
+    solver.assertFormula(q1);
+    solver.assertFormula(tm.mkTerm(Kind.NOT, q2));
+
+    assertThat(solver.checkSat().isUnsat()).isTrue();
+
+    Proof[] proof = solver.getProof();
+
+    ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_PROOFS);
+
+    CVC5ProofProcessor pp = new CVC5ProofProcessor((CVC5FormulaCreator) mgr.getFormulaCreator(),
+        (CVC5TheoremProver) prover);
+    ProofNode pn = pp.fromCVC5Proof(proof[0]);
+
+    assertThat(pn).isNotNull();
   }
 
   @Test
