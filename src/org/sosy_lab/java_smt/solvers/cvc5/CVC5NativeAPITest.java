@@ -87,7 +87,6 @@ public class CVC5NativeAPITest {
     newSolver.setOption("finite-model-find", "true");
     newSolver.setOption("output-language", "smtlib2");
     newSolver.setOption("strings-exp", "true");
-    newSolver.setOption("produce-proofs", "true");
 
     return newSolver;
   }
@@ -1399,6 +1398,7 @@ public class CVC5NativeAPITest {
 
   @Test
   public void testGetProof() {
+    solver.setOption("produce-proofs", "true");
     Sort boolSort = solver.getBooleanSort();
 
     //(declare-fun q1 () Bool)
