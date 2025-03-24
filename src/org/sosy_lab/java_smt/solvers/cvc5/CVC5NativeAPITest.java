@@ -150,8 +150,8 @@ public class CVC5NativeAPITest {
     // Op test
     assertThat(equality.getOp().toString()).isEqualTo("EQUAL");
     assertThat(
-        termManager.mkTerm(equality.getOp(), intVar, termManager.mkInteger(1)).getId()
-            == equality.getId())
+            termManager.mkTerm(equality.getOp(), intVar, termManager.mkInteger(1)).getId()
+                == equality.getId())
         .isTrue();
     // Note that variables (Kind.VARIABLES) are bound variables!
     assertThat(termManager.mkVar(termManager.getIntegerSort()).getKind()).isEqualTo(Kind.VARIABLE);
@@ -171,7 +171,7 @@ public class CVC5NativeAPITest {
     // arity 1
     assertThat(uf1.getSort().getFunctionArity()).isEqualTo(1);
     // apply the uf, the kind is now APPLY_UF
-    Term appliedUf1 = termManager.mkTerm(Kind.APPLY_UF, new Term[]{uf1, intVar});
+    Term appliedUf1 = termManager.mkTerm(Kind.APPLY_UF, new Term[] {uf1, intVar});
     assertThat(appliedUf1.getKind()).isNotEqualTo(Kind.VARIABLE);
     assertThat(appliedUf1.getKind()).isNotEqualTo(Kind.CONSTANT);
     assertThat(appliedUf1.getKind()).isEqualTo(Kind.APPLY_UF);
@@ -295,9 +295,7 @@ public class CVC5NativeAPITest {
     assertThat(getInt(varX) * getInt(varY)).isEqualTo(4);
   }
 
-  /**
-   * Helper to get to int values faster.
-   */
+  /** Helper to get to int values faster. */
   private int getInt(Term cvc5Term) {
     String string = solver.getValue(cvc5Term).toString();
     return Integer.parseInt(string);
@@ -372,9 +370,7 @@ public class CVC5NativeAPITest {
     assertThat(satCheck.isSat()).isTrue();
   }
 
-  /**
-   * Real uses the same operators as int (plain plus, mult etc.).
-   */
+  /** Real uses the same operators as int (plain plus, mult etc.). */
   @Test
   public void checkSimpleLRASat() {
     // x * y = 8/5 AND x < 4/5
@@ -393,9 +389,7 @@ public class CVC5NativeAPITest {
     assertThat(satCheck.isSat()).isTrue();
   }
 
-  /**
-   * Exponents may only be natural number constants.
-   */
+  /** Exponents may only be natural number constants. */
   @Test
   public void checkSimplePow() {
     // x ^ 2 = 4 AND x ^ 3 = 8
@@ -540,9 +534,7 @@ public class CVC5NativeAPITest {
     assertThat(satCheck.isSat()).isTrue();
   }
 
-  /**
-   * Note that model and getValue are seperate!
-   */
+  /** Note that model and getValue are seperate! */
   @Test
   public void checkInvalidModelGetValue() {
     Term assertion = termManager.mkBoolean(false);
@@ -555,15 +547,13 @@ public class CVC5NativeAPITest {
     assertThat(e.toString()).contains(INVALID_GETVALUE_STRING_SAT);
   }
 
-  /**
-   * The getModel() call needs an array of sorts and terms.
-   */
+  /** The getModel() call needs an array of sorts and terms. */
   @Test
   public void checkGetModelUnsat() {
     Term assertion = termManager.mkBoolean(false);
     solver.assertFormula(assertion);
-    Sort[] sorts = new Sort[]{termManager.getBooleanSort()};
-    Term[] terms = new Term[]{assertion};
+    Sort[] sorts = new Sort[] {termManager.getBooleanSort()};
+    Term[] terms = new Term[] {assertion};
     Result result = solver.checkSat();
     assertThat(result.isSat()).isFalse();
 
@@ -583,8 +573,8 @@ public class CVC5NativeAPITest {
   public void checkGetModelSatInvalidSort() {
     Term assertion = termManager.mkBoolean(true);
     solver.assertFormula(assertion);
-    Sort[] sorts = new Sort[]{termManager.getBooleanSort()};
-    Term[] terms = new Term[]{assertion};
+    Sort[] sorts = new Sort[] {termManager.getBooleanSort()};
+    Term[] terms = new Term[] {assertion};
     Result result = solver.checkSat();
     assertThat(result.isSat()).isTrue();
     Exception e =
@@ -593,15 +583,13 @@ public class CVC5NativeAPITest {
     assertThat(e.toString()).contains("expected an uninterpreted sort as argument to getModel.");
   }
 
-  /**
-   * Same as checkGetModelSatInvalidSort but with invalid term.
-   */
+  /** Same as checkGetModelSatInvalidSort but with invalid term. */
   @Test
   public void checkGetModelSatInvalidTerm() {
     Term assertion = termManager.mkBoolean(true);
     solver.assertFormula(assertion);
-    Sort[] sorts = new Sort[]{};
-    Term[] terms = new Term[]{assertion};
+    Sort[] sorts = new Sort[] {};
+    Term[] terms = new Term[] {assertion};
     Result result = solver.checkSat();
     assertThat(result.isSat()).isTrue();
     Exception e =
@@ -614,8 +602,8 @@ public class CVC5NativeAPITest {
   public void checkGetModelSat() {
     Term assertion = termManager.mkConst(termManager.getBooleanSort());
     solver.assertFormula(assertion);
-    Sort[] sorts = new Sort[]{};
-    Term[] terms = new Term[]{assertion};
+    Sort[] sorts = new Sort[] {};
+    Term[] terms = new Term[] {assertion};
     Result result = solver.checkSat();
     assertThat(result.isSat()).isTrue();
     String model = solver.getModel(sorts, terms);
@@ -638,9 +626,7 @@ public class CVC5NativeAPITest {
     assertThrows(NullPointerException.class, () -> solver.getModel(sorts, terms));
   }
 
-  /**
-   * It does not matter if you take an int or array or bv here, all result in the same error.
-   */
+  /** It does not matter if you take an int or array or bv here, all result in the same error. */
   @Test
   public void checkInvalidTypeOperationsAssert() throws CVC5ApiException {
     Sort bvSort = termManager.mkBitVectorSort(16);
@@ -652,9 +638,7 @@ public class CVC5NativeAPITest {
     assertThat(e.toString()).contains("Expected term with sort Bool");
   }
 
-  /**
-   * It does not matter if you take an int or array or bv here, all result in the same error.
-   */
+  /** It does not matter if you take an int or array or bv here, all result in the same error. */
   @Test
   public void checkInvalidTypeOperationsCheckSat() throws CVC5ApiException {
     Sort bvSort = termManager.mkBitVectorSort(16);
@@ -924,9 +908,7 @@ public class CVC5NativeAPITest {
     assertThat(e.getMessage().strip()).matches(INVALID_TERM_BOUND_VAR);
   }
 
-  /**
-   * CVC5 does not support Array quantifier elimination. This would run endlessly!
-   */
+  /** CVC5 does not support Array quantifier elimination. This would run endlessly! */
   @Ignore
   @Test
   public void checkArrayQuantElim() {
@@ -944,9 +926,7 @@ public class CVC5NativeAPITest {
     assertThat(result.toString()).isEqualTo(resultString);
   }
 
-  /**
-   * CVC5 does support Bv quantifier elim.!
-   */
+  /** CVC5 does support Bv quantifier elim.! */
   @Test
   public void checkQuantifierEliminationBV() throws CVC5ApiException {
     // build formula: exists y : bv[2]. x * y = 1
@@ -1235,9 +1215,7 @@ public class CVC5NativeAPITest {
     */
   }
 
-  /**
-   * Sets up array and quantifier based formulas for tests.
-   */
+  /** Sets up array and quantifier based formulas for tests. */
   private void setupArrayQuant() {
     Term zero = termManager.mkInteger(0);
     Term one = termManager.mkInteger(1);
@@ -1256,7 +1234,7 @@ public class CVC5NativeAPITest {
    * For some reason CVC5 does not provide API to create max (or min) size signed/unsigned
    * bitvectors.
    *
-   * @param width  of the bitvector term.
+   * @param width of the bitvector term.
    * @param signed true if signed. false for unsigned.
    * @return Max size bitvector term.
    */
@@ -1401,9 +1379,9 @@ public class CVC5NativeAPITest {
   }
 
   @Test
-  public void testProofs() throws CVC5ApiException {
+  public void testProofMethods() throws CVC5ApiException {
     solver.setOption("produce-proofs", "true");
-    Sort boolSort = solver.getBooleanSort();
+    Sort boolSort = termManager.getBooleanSort();
 
     //(declare-fun q1 () Bool)
     //(declare-fun q2 () Bool)
@@ -1415,16 +1393,18 @@ public class CVC5NativeAPITest {
     Term q1 = solver.declareFun("q1", new Sort[]{}, boolSort);
     Term q2 = solver.declareFun("q2", new Sort[]{}, boolSort);
 
-    solver.assertFormula(solver.mkTerm(Kind.OR, solver.mkTerm(Kind.NOT, q1), q2));
+    solver.assertFormula(termManager.mkTerm(Kind.OR, termManager.mkTerm(Kind.NOT, q1), q2));
     solver.assertFormula(q1);
-    solver.assertFormula(solver.mkTerm(Kind.NOT, q2));
+    solver.assertFormula(termManager.mkTerm(Kind.NOT, q2));
 
     Result satCheck = solver.checkSat();
     assertThat(satCheck.isUnsat()).isTrue();
 
-    Proof[] proof = solver.getProof();
+    Proof[] proofs = solver.getProof();
 
-    assertThat(proof).isNotNull();
+    assertThat(proofs).isNotNull();
+
+    Proof proof = proofs[0];
 
     //Test getRule
     assertThat(proof.getRule()).isNotNull();
@@ -1444,6 +1424,7 @@ public class CVC5NativeAPITest {
 
     assertThat(childrenOfThirdProof.length).isEqualTo(2);
 
+    //Test equals
     assertThat(childrenOfThirdProof[0].equals(childrenOfThirdProof[1])).isFalse();
 
     assertThat(childrenOfThirdProof[0].equals(childrenOfThirdProof[0])).isTrue();
@@ -1452,7 +1433,8 @@ public class CVC5NativeAPITest {
     assertThat(Optional.ofNullable(proof.getResult())).isNotNull();
 
     //Test getArguments
-    assertThat(proof.getArguments()).isNotNull();
+    assertThat(childrenOfThirdProof[0].getArguments()).isNotNull();
+    assertThat(Optional.ofNullable(childrenOfThirdProof[0].getArguments()[0])).isNotNull();
 
   }
 }
