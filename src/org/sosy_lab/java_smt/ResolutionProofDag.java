@@ -10,7 +10,13 @@
 
 package org.sosy_lab.java_smt;
 
+import java.util.Objects;
+import org.sosy_lab.java_smt.ResProofRule.ResAxiom;
+import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.proofs.ProofNode;
+import org.sosy_lab.java_smt.api.proofs.ProofRule;
 import org.sosy_lab.java_smt.basicimpl.AbstractProofDag;
+import org.sosy_lab.java_smt.basicimpl.AbstractProofNode;
 
 @SuppressWarnings("all")
 public class ResolutionProofDag extends AbstractProofDag {
@@ -69,4 +75,43 @@ public class ResolutionProofDag extends AbstractProofDag {
   }
 
    */
+
+  public static class ResolutionProofNode extends AbstractProofNode implements ProofNode {
+
+    private final Formula pivot;
+
+    public ResolutionProofNode(Formula formula, Formula pivot) {
+      super(ResAxiom.RESOLUTION, Objects.requireNonNull(formula, "Formula must not be null"));
+      this.pivot = Objects.requireNonNull(pivot, "Pivot must not be null");
+    }
+
+    @Override
+    public boolean isSource() {
+      return false;
+    }
+
+    public Formula getPivot() {
+      return pivot;
+    }
+
+    @Override
+    public ProofRule getRule() {
+      return super.getRule();
+    }
+  }
+
+  public static class SourceProofNode extends AbstractProofNode implements ProofNode {
+
+    public SourceProofNode(ResAxiom rule, Formula formula) {
+      super(
+          Objects.requireNonNull(rule, "Rule must not be null"),
+          Objects.requireNonNull(formula, "Formula must not be null"));
+    }
+
+    @Override
+    public boolean isSource() {
+      return true;
+    }
+  }
+
 }
