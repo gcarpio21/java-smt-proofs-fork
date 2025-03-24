@@ -18,13 +18,14 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.ProverEnvironment;
 import org.sosy_lab.java_smt.api.proofs.ProofRule;
 
 public class CVC5ProofProcessor {
   private final CVC5FormulaCreator formulaCreator;
-  private final CVC5AbstractProver prover;
+  private final ProverEnvironment prover;
 
-  CVC5ProofProcessor(CVC5FormulaCreator creator, CVC5AbstractProver pProver) {
+  CVC5ProofProcessor(CVC5FormulaCreator creator, ProverEnvironment pProver) {
     formulaCreator = creator;
     prover = pProver;
   }

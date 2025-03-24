@@ -175,7 +175,7 @@ public class CVC5ProofsTest {
     ProverEnvironment prover = context.newProverEnvironment(ProverOptions.GENERATE_PROOFS);
 
     CVC5ProofProcessor pp = new CVC5ProofProcessor((CVC5FormulaCreator) mgr.getFormulaCreator(),
-        (CVC5TheoremProver) prover);
+       prover);
     ProofNode pn = pp.fromCVC5Proof(proof[0]);
 
     assertThat(pn).isNotNull();
