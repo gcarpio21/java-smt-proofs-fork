@@ -11,11 +11,67 @@
 package org.sosy_lab.java_smt.api.proofs;
 
 import org.sosy_lab.java_smt.ResProofRule.ResAxiom;
-import org.sosy_lab.java_smt.ResolutionProofNode;
-import org.sosy_lab.java_smt.SourceProofNode;
+import org.sosy_lab.java_smt.ResolutionProofDag.ResolutionProofNode;
+import org.sosy_lab.java_smt.ResolutionProofDag.SourceProofNode;
 import org.sosy_lab.java_smt.api.Formula;
+import org.sosy_lab.java_smt.api.ProverEnvironment;
+import org.sosy_lab.java_smt.basicimpl.FormulaCreator;
+import org.sosy_lab.java_smt.solvers.mathsat5.Mathsat5ProofNode;
 
- class ProofFactory {
+/**
+ * A factory for creating proof nodes. The methods of this class are to be used in the ProofNode
+ * implementations of each solver to be able to convert the proof object given back by the solver to
+ * a proof in JavaSMT.
+ *
+ * @param <T> The type of the proof object.
+ */
+public class ProofFactory<T> {
+
+  private final FormulaCreator<?, ?, ?, ?> formulaCreator;
+  private final ProverEnvironment prover;
+  private final Solvers solver;
+
+  enum Solvers {
+    OPENSMT,
+    MATHSAT5,
+    SMTINTERPOL,
+    Z3,
+    PRINCESS,
+    BOOLECTOR,
+    CVC4,
+    CVC5,
+    YICES2,
+    BITWUZLA
+  }
+
+  ProofFactory(
+      FormulaCreator<?, ?, ?, ?> pCreator,
+      ProverEnvironment pProver,
+      ProofFactory.Solvers pSolver) {
+    formulaCreator = pCreator;
+    prover = pProver;
+    solver = pSolver;
+  }
+
+  ProofNode createProofNode(T proof) {
+    return createProofNode0(proof);
+  }
+
+  ProofNode createProofNode0(T proof) {
+    switch (solver) {
+      case MATHSAT5:
+        return Mathsat5ProofNode.fromMsatProof(prover, (long) proof);
+      case CVC5:
+        return null;
+      default:
+        throw new UnsupportedOperationException("Unsupported solver: " + solver);
+    }
+  }
+
+  static ProofNode createRresoluteNode() {
+    return null;
+  }
+
   static ProofNode createSourceNode(ResAxiom rule, Formula formula) {
     return new SourceProofNode(rule, formula);
   }

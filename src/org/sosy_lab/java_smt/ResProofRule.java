@@ -10,10 +10,15 @@
 
 package org.sosy_lab.java_smt;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.sosy_lab.java_smt.api.proofs.ProofRule;
 
 /**
- * A proof rule in the proof DAG of the internal proof format of JavaSMT.
+ * A proof rule in the proof DAG of the proof format RESOLUTE used by SMTInterpol. See: <a
+ * href="https://ultimate.informatik.uni-freiburg.de/smtinterpol/proof-format.html">...</a>
+ *
+ * <p>The conversion from other formats to RESOLUTE appears to be simple and as such, it is a good
+ * candidate for a common proof format.
  *
  * @author Gabriel Carpio
  */
@@ -24,6 +29,7 @@ public class ResProofRule {
     // Resolution Rule
     RESOLUTION("res", "(res t proof1 proof2)"),
 
+    // RUP("rup", null),
     ASSUME("assume", "(assume t)"),
     // Logical operators
     TRUE_POSITIVE("true+", "(+ true)"),
@@ -105,9 +111,9 @@ public class ResProofRule {
         "(= (match t ((p1 x1) c1) ...) (ite ((_ is p1) t) (let (x1 (sel1 t)) c1) ...))");
 
     private final String name;
-    private final String formula;
+    @Nullable private final String formula;
 
-    ResAxiom(String pName, String pFormula) {
+    ResAxiom(String pName, @Nullable String pFormula) {
       name = pName;
       formula = pFormula;
     }

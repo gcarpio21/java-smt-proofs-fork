@@ -52,6 +52,7 @@ class Mathsat5TheoremProver extends Mathsat5AbstractProver<Void> implements Prov
   public ProofNode getProof() {
     ProofNode pn;
     long pm = msat_get_proof_manager(curEnv);
+    // ProofFactory proofFactory = new ProofFactory();
     Mathsat5ProofProcessor pp = new Mathsat5ProofProcessor(context, curEnv, creator, this);
     pn = pp.fromMsatProof(msat_get_proof(pm));
     msat_destroy_proof_manager(pm);

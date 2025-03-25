@@ -19,8 +19,8 @@ import java.util.List;
 import java.util.Map;
 import org.sosy_lab.java_smt.ResProofRule.ResAxiom;
 import org.sosy_lab.java_smt.ResolutionProofDag;
-import org.sosy_lab.java_smt.ResolutionProofNode;
-import org.sosy_lab.java_smt.SourceProofNode;
+import org.sosy_lab.java_smt.ResolutionProofDag.ResolutionProofNode;
+import org.sosy_lab.java_smt.ResolutionProofDag.SourceProofNode;
 import org.sosy_lab.java_smt.api.BooleanFormula;
 import org.sosy_lab.java_smt.api.BooleanFormulaManager;
 import org.sosy_lab.java_smt.api.Formula;
@@ -32,25 +32,22 @@ import org.sosy_lab.java_smt.api.visitors.TraversalProcess;
 
 /**
  * Converts a Z3 proof into a format based on the RESOLUTE proof format.
- * <p>
- * The RESOLUTE format is a low-level proof format used by SMTInterpol. It exclusively relies on
- * the resolution rule, with multiple axioms defined to support various theories. These axioms
- * serve as the leaf nodes in the proof DAG.
- * </p>
- * The strategy used is to transform each result from a Z3 proof into corresponding resolution
- * proof nodes, aiming to maintain the formulas used as arguments for the Z3 proof rule as well
- * as the result. Depending on the rule, the number of nodes may remain the same (e.g., for modus ponens) or increase
- * (e.g., for transitivity star). For the transitivity star rule, the sub-proof grows
- * approximately <code>2n-1</code> times, where <code>n</code> is the number of nodes in the
- * sub-proof.
- * </p>
+ *
+ * <p>The RESOLUTE format is a low-level proof format used by SMTInterpol. It exclusively relies on
+ * the resolution rule, with multiple axioms defined to support various theories. These axioms serve
+ * as the leaf nodes in the proof DAG. The strategy used is to transform each result from a Z3 proof
+ * into corresponding resolution proof nodes, aiming to maintain the formulas used as arguments for
+ * the Z3 proof rule as well as the result. Depending on the rule, the number of nodes may remain
+ * the same (e.g., for modus ponens) or increase (e.g., for transitivity star). For the transitivity
+ * star rule, the sub-proof grows approximately <code>2n-1</code> times, where <code>n</code> is the
+ * number of nodes in the sub-proof.
  *
  * @see Z3ProofRule for the list of Z3 proof rules.
  * @see org.sosy_lab.java_smt.ResProofRule for the list of RESOLUTE axioms.
- **/
+ */
 @SuppressWarnings({"unchecked", "rawtypes", "unused", "static-access", "ModifiedButNotUsed"})
-public class Z3ToResoluteProofConverter {
-
+public class Z3ToResoluteProofConverter { // This class is inclompete and currently not used. The
+  // strategy for transforming proof rules should be proved first.
   private final Z3FormulaManager formulaManager;
 
   private final BooleanFormulaManager bfm;
@@ -62,7 +59,12 @@ public class Z3ToResoluteProofConverter {
 
   private static final Map<Z3ProofRule, ResAxiom> ruleMapping = new HashMap<>();
 
-
+  /**
+   * This method converts a set of Z3ProofNodes into a {@link ResolutionProofDag}.
+   *
+   * @param z3ProofNodes
+   * @return {@link ResolutionProofDag}
+   */
   static ResolutionProofDag convertToResolutionProofDag(Z3ProofNode[] z3ProofNodes) {
     ResolutionProofDag dag = new ResolutionProofDag();
 
@@ -80,6 +82,7 @@ public class Z3ToResoluteProofConverter {
     return dag;
   }
 
+  // This should help extract parts of a formula to better transform proof rules.
   private static class ExtractorVisitor implements BooleanFormulaVisitor<TraversalProcess> {
     private final List<BooleanFormula> equivalenceOperands = new ArrayList<>();
 
@@ -158,8 +161,8 @@ public class Z3ToResoluteProofConverter {
   }
 
   /**
-   * Converts a {@link Z3ProofNode} into either a {@link ResolutionProofNode} or
-   * a {@link SourceProofNode}, depending on its rule.
+   * Converts a {@link Z3ProofNode} into either a {@link ResolutionProofNode} or a {@link
+   * SourceProofNode}, depending on its rule.
    *
    * @param node the {@link Z3ProofNode} to convert
    * @return the resulting {@link ProofNode}
@@ -537,6 +540,7 @@ public class Z3ToResoluteProofConverter {
     return null;
   }
 
+  // This is for debugging purposes.
   void printProof(ProofNode node, int indentLevel) {
     String indent = "  ".repeat(indentLevel);
 
